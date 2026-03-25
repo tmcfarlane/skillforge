@@ -48,4 +48,61 @@ Track progress, decisions, and discoveries across sessions.
 
 ---
 
+## Session 2 — 2026-03-25
+
+### Status: Phase 2 Complete (Skill Engine)
+
+**GitHub repo initialized:** https://github.com/tmcfarlane/skillforge
+
+**What was built:**
+
+| Task | Module | File | Status |
+|------|--------|------|--------|
+| P2-01 | LLM-as-judge scorer | `src/judge/judgeScorer.ts` | ✅ |
+| P2-02 | Success signal aggregator | `src/signals/aggregator.ts` | ✅ |
+| P2-03 | Skeleton extractor | `src/skills/skeletonExtractor.ts` | ✅ |
+| P2-04 | Skeleton consistency tests | `src/__tests__/skeletonExtractor.test.ts` | ✅ |
+| P2-05 | Skill: llm-as-judge-scorer | `skills/llm-as-judge-scorer/SKILL.md` | ✅ |
+| P2-06 | Skill generator | `src/skills/generator.ts` | ✅ |
+| P2-07 | Registry migrations | `src/db/database.ts` (4 new tables) | ✅ |
+| P2-08 | BM25 skill matcher | `src/skills/matcher.ts` | ✅ |
+| P2-09 | Injector enrichment | `src/skills/injector.ts` (BM25 + cf-aig-metadata) | ✅ |
+| P2-10 | Eval runner | `src/eval/evalRunner.ts` + `src/eval/router.ts` | ✅ |
+| P2-11 | Eval tests | `src/__tests__/evalRunner.test.ts` | ✅ |
+| P2-12 | BullMQ queues | `src/queues/queues.ts` | ✅ |
+| P2-13 | Skills: sqlite, bm25, bullmq | `skills/sqlite-registry-pattern/`, `skills/bm25-skill-matching/`, `skills/bullmq-background-queue/` | ✅ |
+
+**New tables added:**
+- `judge_scores` — LLM-as-judge evaluation results
+- `skill_versions` — versioned SKILL.md content
+- `skill_scores` — per-signal and composite scores
+- `skill_lineage` — parent/child/conflict relationships
+
+**Test suite:** 56 tests across 5 test files, all passing.
+
+**Key decisions:**
+- BM25 implemented inline (no external dep) — sufficient for < 10K skills
+- BullMQ workers start only when `REDIS_HOST` env var is set (graceful degradation)
+- Workers use lazy `import()` to avoid loading LLM clients at startup
+- Injector now produces `cfMetadataHeader` for Cloudflare gateway log tagging
+- Eval runner uses a cheaper task model (haiku) + more capable judge (sonnet)
+
+**New HTTP endpoints:**
+- `POST /eval/enqueue` — async A/B eval job via BullMQ
+- `GET  /eval/results/:skillId` — fetch eval results from DB
+- `GET  /eval/queues` — Redis queue depth stats
+
+**Next session should start with:**
+1. Set `REDIS_HOST` and `REDIS_PORT` to enable background workers
+2. Set `CF_ACCOUNT_ID`, `CF_GATEWAY_NAME`, `CF_API_TOKEN` for gateway
+3. Run `POST /skills/extract` to load all 7 SKILL.md files into DB
+4. Run `POST /eval/enqueue` with a real skill_id to test A/B eval
+5. Consider: P2 Phase 2 extension — embedding-based retrieval, conflict detection
+
+**Blocked on:**
+- Redis required for BullMQ queues (workers gracefully disabled if not present)
+- Cloudflare Key Vault reference for LLM calls (no direct provider calls ever)
+
+---
+
 _Append new sessions below with date and status._

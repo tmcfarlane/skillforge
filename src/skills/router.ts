@@ -55,6 +55,7 @@ skillsRouter.get("/inject", (c) => {
     skillCount: result.skills.length,
     tokenEstimate: result.tokenEstimate,
     systemFragment: result.systemFragment,
+    cfMetadataHeader: result.cfMetadataHeader,
   });
 });
 

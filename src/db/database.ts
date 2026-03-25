@@ -109,5 +109,56 @@ function runMigrations(db: Database): void {
     );
   `);
 
+  // P2-01: LLM-as-judge evaluation scores
+  db.run(`
+    CREATE TABLE IF NOT EXISTS judge_scores (
+      id              TEXT PRIMARY KEY,
+      skill_id        TEXT REFERENCES skills(id),
+      experiment_id   TEXT REFERENCES experiments(id),
+      prompt          TEXT NOT NULL,
+      response        TEXT NOT NULL,
+      score           REAL NOT NULL CHECK(score BETWEEN 0 AND 1),
+      reasoning       TEXT NOT NULL,
+      model           TEXT NOT NULL,
+      provider        TEXT NOT NULL,
+      prompt_tokens   INTEGER NOT NULL DEFAULT 0,
+      output_tokens   INTEGER NOT NULL DEFAULT 0,
+      judged_at       TEXT NOT NULL
+    );
+  `);
+
+  // P2-07: Skill versioning, per-skill scores, and lineage tracking
+  db.run(`
+    CREATE TABLE IF NOT EXISTS skill_versions (
+      id          TEXT PRIMARY KEY,
+      skill_id    TEXT NOT NULL REFERENCES skills(id),
+      version     INTEGER NOT NULL DEFAULT 1,
+      content     TEXT NOT NULL,
+      created_at  TEXT NOT NULL DEFAULT (datetime('now')),
+      UNIQUE(skill_id, version)
+    );
+  `);
+
+  db.run(`
+    CREATE TABLE IF NOT EXISTS skill_scores (
+      id            TEXT PRIMARY KEY,
+      skill_id      TEXT NOT NULL REFERENCES skills(id),
+      score_type    TEXT NOT NULL,  -- 'judge' | 'feedback' | 'implicit' | 'composite'
+      score         REAL NOT NULL CHECK(score BETWEEN 0 AND 1),
+      weight        REAL NOT NULL DEFAULT 1.0,
+      recorded_at   TEXT NOT NULL DEFAULT (datetime('now'))
+    );
+  `);
+
+  db.run(`
+    CREATE TABLE IF NOT EXISTS skill_lineage (
+      id            TEXT PRIMARY KEY,
+      parent_id     TEXT REFERENCES skills(id),
+      child_id      TEXT NOT NULL REFERENCES skills(id),
+      relation_type TEXT NOT NULL,  -- 'derived_from' | 'refines' | 'conflicts_with'
+      created_at    TEXT NOT NULL DEFAULT (datetime('now'))
+    );
+  `);
+
   logger.info("Database migrations complete");
 }
