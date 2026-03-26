@@ -12,7 +12,12 @@
     "typecheck": "tsc --noEmit",
     "lint": "eslint src --ext .ts",
     "format": "prettier --write src/**/*.ts",
-    "start": "node dist/index.js"
+    "start": "node dist/index.js",
+    "autoResearch": "tsx src/autoresearch/cli.ts",
+    "autoResearch:start": "tsx src/autoresearch/cli.ts start",
+    "autoResearch:stop": "tsx src/autoresearch/cli.ts stop",
+    "autoResearch:status": "tsx src/autoresearch/cli.ts status",
+    "autoResearch:report": "tsx src/autoresearch/cli.ts report"
   },
   "keywords": [
     "skillforge",

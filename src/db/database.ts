@@ -160,5 +160,41 @@ function runMigrations(db: Database): void {
     );
   `);
 
+  // P3-01: AutoResearch run tracking
+  db.run(`
+    CREATE TABLE IF NOT EXISTS autoresearch_runs (
+      id            TEXT PRIMARY KEY,
+      started_at    TEXT NOT NULL DEFAULT (datetime('now')),
+      stopped_at    TEXT,
+      status        TEXT NOT NULL DEFAULT 'running',
+      experiments   INTEGER NOT NULL DEFAULT 0,
+      wins          INTEGER NOT NULL DEFAULT 0,
+      losses        INTEGER NOT NULL DEFAULT 0,
+      report_path   TEXT
+    );
+  `);
+
+  // P3-02: Per-experiment variant results
+  db.run(`
+    CREATE TABLE IF NOT EXISTS autoresearch_experiments (
+      id                  TEXT PRIMARY KEY,
+      run_id              TEXT NOT NULL REFERENCES autoresearch_runs(id),
+      skill_id            TEXT NOT NULL REFERENCES skills(id),
+      strategy            TEXT NOT NULL,
+      original_score      REAL NOT NULL DEFAULT 0,
+      variant_score       REAL NOT NULL DEFAULT 0,
+      original_tokens     INTEGER NOT NULL DEFAULT 0,
+      variant_tokens      INTEGER NOT NULL DEFAULT 0,
+      original_latency_ms INTEGER NOT NULL DEFAULT 0,
+      variant_latency_ms  INTEGER NOT NULL DEFAULT 0,
+      composite_delta     REAL NOT NULL DEFAULT 0,
+      winner              TEXT NOT NULL DEFAULT 'original',
+      confidence          REAL NOT NULL DEFAULT 0,
+      promoted            INTEGER NOT NULL DEFAULT 0,
+      notes               TEXT,
+      ran_at              TEXT NOT NULL DEFAULT (datetime('now'))
+    );
+  `);
+
   logger.info("Database migrations complete");
 }

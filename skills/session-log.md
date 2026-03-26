@@ -105,4 +105,58 @@ Track progress, decisions, and discoveries across sessions.
 
 ---
 
+## Session 3 — 2026-03-25
+
+### Status: Phase 3 Complete (AutoResearch Loop)
+
+**What was built:**
+
+| Task | Module | File | Status |
+|------|--------|------|--------|
+| P3-01 | AutoResearch CLI | `src/autoresearch/cli.ts` | ✅ |
+| P3-02 | Experiment runner | `src/autoresearch/experimentRunner.ts` | ✅ |
+| P3-03 | Experiment scorer | `src/autoresearch/experimentScorer.ts` | ✅ |
+| P3-04 | Skill updater | `src/autoresearch/skillUpdater.ts` | ✅ |
+| P3-05 | Report generator | `src/autoresearch/reportGenerator.ts` | ✅ |
+| P3-06 | program.md template | `program.md` | ✅ |
+| P3-07 | eval.md benchmarks | `eval.md` | ✅ |
+| P3-08 | Live API run | — | 🚫 BLOCKED |
+| P3-09 | Skill capture | `skills/autoresearch-loop-pattern/SKILL.md` | ✅ |
+| P3-10 | Commit + tag | `v0.3.0-autoResearch` | ✅ |
+
+**New DB tables:**
+- `autoresearch_runs` — tracks each CLI run (start/stop/status/report_path)
+- `autoresearch_experiments` — per-experiment results (strategy, scores, delta, winner, promoted)
+
+**CLI commands:**
+```
+npm run autoResearch start   # run experiments (DRY_RUN if no CF env vars)
+npm run autoResearch stop    # write stop file to halt running loop
+npm run autoResearch status  # show last 5 run summaries
+npm run autoResearch report  # print latest report
+```
+
+**Test suite:** 89 tests across 6 test files, all passing. +33 new P3 tests.
+
+**Key design decisions:**
+- 5 variant strategies: prompt-restructure, few-shot-examples, chain-of-thought, direct-answer, algorithm-first
+- Composite scorer: 60% judge quality + 25% token efficiency + 15% latency (configurable weights)
+- Confidence threshold 0.05 — below this, result is "inconclusive" (no change)
+- DRY_RUN mode: CLI starts without CF env vars and simulates experiments for infrastructure testing
+- Stop mechanism: stop-file (`.autoresearch-stop`) + SIGTERM/SIGINT handlers
+- Reports saved to `reports/YYYY-MM-DD.md`, appended if multiple runs per day
+- Skill promotion: bumps version in `skill_versions`, updates `skills.content`, writes back to disk
+- Full audit trail in `autoresearch_experiments` for rollback and reporting
+
+**Blocked on:**
+- `CF_ACCOUNT_ID`, `CF_GATEWAY_NAME`, `CF_API_TOKEN` — required for LLM calls (P3-08)
+- `CF_KEY_VAULT_REF` — Key Vault reference for provider API keys
+
+**Next session should start with:**
+1. Set CF env vars and run `npm run autoResearch start` for a live experiment run
+2. Review `reports/YYYY-MM-DD.md` to see what improved
+3. Consider P4: embedding-based skill retrieval (replace BM25) + Web UI
+
+---
+
 _Append new sessions below with date and status._
