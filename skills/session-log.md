@@ -105,4 +105,57 @@ Track progress, decisions, and discoveries across sessions.
 
 ---
 
+## Session 3 — 2026-03-25
+
+### Status: P0 Competitive Priorities Complete
+
+**What was built:**
+
+| Task | Module | File | Status |
+|------|--------|------|--------|
+| P0-1 | MCP Server (5 tools) | `src/mcp-server/server.ts` | ✅ |
+| P0-2 | DB migration (evolution columns) | `src/db/database.ts` | ✅ |
+| P0-2 | Skill Evolution Engine | `src/skills/evolution.ts` | ✅ |
+| Tests | MCP + Evolution tests | `src/__tests__/mcpServer.test.ts`, `src/__tests__/evolution.test.ts` | ✅ |
+
+**P0-1: MCP Server**
+
+MCP server exposes 5 tools via `@modelcontextprotocol/sdk@1.28.0`:
+- `search_skills` — BM25 full-text search, returns ranked candidates
+- `get_skill` — retrieve full SKILL.md by ID
+- `inject_skill` — assemble ready-to-inject context fragment + cfMetadataHeader
+- `capture_skill` — write SKILL.md + register with CAPTURED lineage tag
+- `score_skill` — submit 1–5 rating; updates feedback + skill_scores tables
+
+Run MCP server: `npm run mcp` (or `npx tsx src/mcp-server/server.ts`)
+
+**P0-2: Evolution Modes (FIX / DERIVED / CAPTURED)**
+
+`src/skills/evolution.ts` implements:
+- `captureSkill(input)` — direct or LLM-powered, CAPTURED lineage, works without CF creds when content is provided
+- `fixSkill(input)` — LLM repairs broken skill, records FIX lineage (BLOCKED — needs CF creds)
+- `deriveSkill(input)` — LLM generates improved variant as new child skill, A/B testable via eval runner (BLOCKED — needs CF creds)
+
+`skill_lineage` table now has two new columns: `evolution_type TEXT` (FIX | DERIVED | CAPTURED) and `reason TEXT`.
+ALTER TABLE migrations run safely on existing DBs (try/catch duplicate column guard).
+
+**Key decisions:**
+- MCP server uses `StdioServerTransport` — compatible with Claude Desktop, Cursor, Continue
+- `registerTool()` API used (not deprecated `.tool()` method)
+- `captureSkill` works offline (no LLM) when content is provided directly
+- `fixSkill` and `deriveSkill` are BLOCKED until CF credentials are configured
+
+**BLOCKED on:**
+- `fixSkill` LLM call: needs `CF_ACCOUNT_ID`, `CF_GATEWAY_NAME`, `CF_API_TOKEN`, and a Key Vault ref
+- `deriveSkill` LLM call: same CF credential requirements
+- `captureSkill` with trace (LLM mode): same CF credential requirements
+
+**Next session should start with:**
+1. Set CF credentials and test `fixSkill` with a real skill ID
+2. Wire `evolution.ts` into the HTTP router (`POST /skills/:id/fix`, `POST /skills/:id/derive`)
+3. Add MCP server config to Claude Desktop `claude_desktop_config.json`
+4. Consider embedding-based retrieval to replace BM25 (Phase 3)
+
+---
+
 _Append new sessions below with date and status._

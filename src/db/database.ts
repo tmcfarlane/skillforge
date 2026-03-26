@@ -152,13 +152,23 @@ function runMigrations(db: Database): void {
 
   db.run(`
     CREATE TABLE IF NOT EXISTS skill_lineage (
-      id            TEXT PRIMARY KEY,
-      parent_id     TEXT REFERENCES skills(id),
-      child_id      TEXT NOT NULL REFERENCES skills(id),
-      relation_type TEXT NOT NULL,  -- 'derived_from' | 'refines' | 'conflicts_with'
-      created_at    TEXT NOT NULL DEFAULT (datetime('now'))
+      id             TEXT PRIMARY KEY,
+      parent_id      TEXT REFERENCES skills(id),
+      child_id       TEXT NOT NULL REFERENCES skills(id),
+      relation_type  TEXT NOT NULL,  -- 'derived_from' | 'refines' | 'conflicts_with' | 'captured'
+      evolution_type TEXT,           -- 'FIX' | 'DERIVED' | 'CAPTURED' (P0-2)
+      reason         TEXT,           -- why this evolution was triggered
+      created_at     TEXT NOT NULL DEFAULT (datetime('now'))
     );
   `);
+
+  // P0-2: Migrate existing skill_lineage rows to include new columns (safe no-ops if already exist)
+  try {
+    db.run(`ALTER TABLE skill_lineage ADD COLUMN evolution_type TEXT`);
+  } catch { /* column already exists — ignore */ }
+  try {
+    db.run(`ALTER TABLE skill_lineage ADD COLUMN reason TEXT`);
+  } catch { /* column already exists — ignore */ }
 
   logger.info("Database migrations complete");
 }
