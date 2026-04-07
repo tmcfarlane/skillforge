@@ -1,7 +1,0 @@
-{
-  "tool_name": "Bash",
-  "tool_input_preview": "{\"command\":\"git status && git log --oneline -5\",\"description\":\"Check git status and recent commits\"}",
-  "error": "Exit code 128\nfatal: not a git repository (or any of the parent directories): .git",
-  "timestamp": "2026-04-03T21:36:12.243Z",
-  "retry_count": 1
-}

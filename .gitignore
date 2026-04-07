@@ -9,3 +9,7 @@ coverage/
 .turbo/
 OpenSpace/
 autoresearch/
+.omc/
+__pycache__/
+*.pyc
+*.pyo
