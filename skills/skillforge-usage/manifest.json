@@ -1,0 +1,23 @@
+{
+  "$schema": "../../schemas/manifest.schema.json",
+  "id": "skillforge-usage",
+  "name": "SkillForge Usage",
+  "version": "1.0.0",
+  "description": "How to discover and use SkillForge skills via the MCP server — the bootstrap skill",
+  "category": "tool_guide",
+  "tags": ["skillforge", "mcp", "skill-discovery", "meta", "bootstrap"],
+  "author": "skillforge",
+  "license": "MIT",
+  "execution": {
+    "preferredModel": "claude-sonnet-4-6",
+    "requiresUserConfirmation": false,
+    "idempotent": true,
+    "destructive": false
+  },
+  "guardrails": [
+    "Always check for relevant skills before starting a complex task",
+    "Do not skip skill discovery for multi-step workflows",
+    "Read the full SKILL.md instructions before executing a skill's workflow"
+  ],
+  "createdAt": "2026-03-29T00:00:00Z"
+}

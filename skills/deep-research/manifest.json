@@ -1,0 +1,33 @@
+{
+  "$schema": "../../schemas/manifest.schema.json",
+  "id": "deep-research",
+  "name": "Deep Research",
+  "version": "1.0.0",
+  "description": "Structured multi-source research workflow producing comprehensive, cited findings",
+  "category": "workflow",
+  "tags": ["research", "analysis", "web-search", "synthesis", "citations"],
+  "author": "skillforge",
+  "license": "MIT",
+  "integrations": [
+    {
+      "name": "Web Search",
+      "type": "tool",
+      "description": "Web search capability for finding sources",
+      "required": true,
+      "toolName": "WebSearch"
+    }
+  ],
+  "execution": {
+    "preferredModel": "claude-opus-4-6",
+    "parallelizable": true,
+    "idempotent": false,
+    "timeoutMs": 300000
+  },
+  "guardrails": [
+    "Always cite sources with URLs",
+    "Distinguish between facts and analysis/opinion",
+    "Flag conflicting information across sources explicitly",
+    "Never fabricate citations or sources"
+  ],
+  "createdAt": "2026-03-29T00:00:00Z"
+}

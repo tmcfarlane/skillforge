@@ -1,0 +1,33 @@
+{
+  "$schema": "../../schemas/manifest.schema.json",
+  "id": "git-workflow",
+  "name": "Git Workflow",
+  "version": "1.0.0",
+  "description": "Consistent git branching, commit, and pull request workflow for teams",
+  "category": "workflow",
+  "tags": ["git", "version-control", "branching", "commits", "pull-request", "github"],
+  "author": "skillforge",
+  "license": "MIT",
+  "environment": [
+    {
+      "name": "git",
+      "description": "Git must be available on PATH",
+      "required": true,
+      "tools": ["git"],
+      "platform": ["darwin", "linux", "win32"]
+    }
+  ],
+  "execution": {
+    "preferredModel": "claude-sonnet-4-6",
+    "requiresUserConfirmation": true,
+    "idempotent": false,
+    "destructive": true
+  },
+  "guardrails": [
+    "Never force-push to main or master branches",
+    "Always confirm before destructive git operations (reset --hard, clean -f, branch -D)",
+    "Require explicit confirmation before pushing to remote",
+    "Never commit secrets, credentials, or .env files"
+  ],
+  "createdAt": "2026-03-29T00:00:00Z"
+}

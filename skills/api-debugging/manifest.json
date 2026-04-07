@@ -1,0 +1,24 @@
+{
+  "$schema": "../../schemas/manifest.schema.json",
+  "id": "api-debugging",
+  "name": "API Debugging",
+  "version": "1.0.0",
+  "description": "Systematically debug REST API issues: authentication, payloads, headers, and response errors",
+  "category": "workflow",
+  "tags": ["api", "rest", "debugging", "http", "curl", "authentication"],
+  "author": "skillforge",
+  "license": "MIT",
+  "execution": {
+    "preferredModel": "claude-sonnet-4-6",
+    "requiresUserConfirmation": false,
+    "parallelizable": false,
+    "idempotent": true,
+    "destructive": false
+  },
+  "guardrails": [
+    "Never log or expose full API keys or secrets in output",
+    "Redact sensitive headers (Authorization, X-API-Key) in debug output",
+    "Do not send requests to production endpoints without explicit confirmation"
+  ],
+  "createdAt": "2026-03-29T00:00:00Z"
+}

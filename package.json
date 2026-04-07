@@ -1,0 +1,19 @@
+{
+  "name": "skillforge",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Portable premium agent skills for Claude Desktop",
+  "scripts": {
+    "build": "pnpm -r build",
+    "typecheck": "pnpm -r typecheck",
+    "clean": "pnpm -r clean",
+    "dev": "pnpm -r --parallel dev"
+  },
+  "devDependencies": {
+    "typescript": "^5.4.0"
+  },
+  "engines": {
+    "node": ">=18.0.0",
+    "pnpm": ">=8.0.0"
+  }
+}

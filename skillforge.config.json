@@ -1,0 +1,5 @@
+{
+  "skillsPath": "./skills",
+  "defaultAuthor": "skillforge",
+  "defaultLicense": "MIT"
+}

@@ -1,0 +1,26 @@
+{
+  "$schema": "../../schemas/manifest.schema.json",
+  "id": "database-migration",
+  "name": "Database Migration",
+  "version": "1.0.0",
+  "description": "Safe database schema migration workflow: plan, test, execute, rollback",
+  "category": "workflow",
+  "tags": ["database", "migration", "schema", "sql", "rollback", "postgresql", "mysql"],
+  "author": "skillforge",
+  "license": "MIT",
+  "execution": {
+    "preferredModel": "claude-opus-4-6",
+    "requiresUserConfirmation": true,
+    "parallelizable": false,
+    "idempotent": false,
+    "destructive": true
+  },
+  "guardrails": [
+    "Always backup database before running migrations in production",
+    "Never run irreversible migrations without a rollback plan",
+    "Test migration on staging environment before production",
+    "Never DROP COLUMN or DROP TABLE without explicit user confirmation",
+    "Require confirmation for any migration that modifies more than 1000 rows"
+  ],
+  "createdAt": "2026-03-29T00:00:00Z"
+}

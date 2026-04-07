@@ -1,0 +1,314 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "SkillManifest",
+  "description": "Schema for SkillForge skill manifest files",
+  "type": "object",
+  "required": [
+    "id",
+    "name",
+    "version",
+    "description",
+    "category",
+    "tags"
+  ],
+  "additionalProperties": false,
+  "properties": {
+    "$schema": {
+      "type": "string",
+      "description": "URI of the JSON Schema that validates this manifest"
+    },
+    "id": {
+      "type": "string",
+      "minLength": 1,
+      "pattern": "^[a-z0-9][a-z0-9-/]*$",
+      "description": "Unique identifier for the skill (lowercase alphanumeric, hyphens, forward slashes)"
+    },
+    "name": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Human-readable name of the skill"
+    },
+    "version": {
+      "type": "string",
+      "pattern": "^\\d+\\.\\d+\\.\\d+$",
+      "description": "Semantic version (major.minor.patch)"
+    },
+    "description": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Brief description of the skill's purpose"
+    },
+    "category": {
+      "type": "string",
+      "enum": [
+        "workflow",
+        "tool_guide",
+        "domain",
+        "integration",
+        "guardrail"
+      ],
+      "description": "Skill category"
+    },
+    "tags": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Tags for organizing and discovering the skill"
+    },
+    "author": {
+      "type": "string",
+      "description": "Author or organization that created the skill"
+    },
+    "license": {
+      "type": "string",
+      "description": "License identifier (e.g., MIT, Apache-2.0)"
+    },
+    "homepage": {
+      "type": "string",
+      "description": "URL to the skill's homepage or documentation"
+    },
+    "environment": {
+      "type": "array",
+      "items": {
+        "$ref": "#/definitions/EnvironmentRequirement"
+      },
+      "description": "Environment requirements for running the skill"
+    },
+    "integrations": {
+      "type": "array",
+      "items": {
+        "$ref": "#/definitions/IntegrationRequirement"
+      },
+      "description": "External integrations required by the skill"
+    },
+    "hooks": {
+      "type": "array",
+      "items": {
+        "$ref": "#/definitions/HookBinding"
+      },
+      "description": "Hooks for embedding the skill in Claude Code"
+    },
+    "execution": {
+      "$ref": "#/definitions/SkillExecutionHints",
+      "description": "Execution hints and constraints for the skill"
+    },
+    "guardrails": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Guardrails and safety constraints for the skill"
+    },
+    "requires": {
+      "type": "array",
+      "items": { "type": "string", "minLength": 1 },
+      "description": "Skill IDs that must be available for this skill to function"
+    },
+    "createdAt": {
+      "type": "string",
+      "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}",
+      "description": "ISO 8601 timestamp when the skill was created"
+    },
+    "updatedAt": {
+      "type": "string",
+      "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}",
+      "description": "ISO 8601 timestamp when the skill was last updated"
+    },
+    "visibility": {
+      "type": "string",
+      "enum": [
+        "private",
+        "public"
+      ],
+      "description": "Visibility level for distribution and registry"
+    }
+  },
+  "definitions": {
+    "EnvironmentRequirement": {
+      "type": "object",
+      "required": [
+        "name",
+        "description",
+        "required"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "name": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Name of the environment requirement"
+        },
+        "description": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Description of what is required"
+        },
+        "required": {
+          "type": "boolean",
+          "description": "Whether this requirement is mandatory"
+        },
+        "envVars": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          },
+          "description": "Environment variables needed"
+        },
+        "tools": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          },
+          "description": "Tools or commands that must be available on PATH"
+        },
+        "platform": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "enum": [
+              "darwin",
+              "linux",
+              "win32"
+            ]
+          },
+          "description": "Supported platforms"
+        },
+        "minNodeVersion": {
+          "type": "string",
+          "description": "Minimum Node.js version required"
+        },
+        "minPythonVersion": {
+          "type": "string",
+          "description": "Minimum Python version required"
+        }
+      }
+    },
+    "IntegrationRequirement": {
+      "type": "object",
+      "required": [
+        "name",
+        "type",
+        "description",
+        "required"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "name": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Name of the integration"
+        },
+        "type": {
+          "type": "string",
+          "enum": [
+            "mcp",
+            "api",
+            "tool",
+            "service"
+          ],
+          "description": "Type of integration"
+        },
+        "description": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Description of what the integration provides"
+        },
+        "required": {
+          "type": "boolean",
+          "description": "Whether this integration is mandatory"
+        },
+        "mcpServer": {
+          "type": "string",
+          "description": "Name of the MCP server (for type: mcp)"
+        },
+        "apiEndpoint": {
+          "type": "string",
+          "description": "API endpoint URL (for type: api)"
+        },
+        "toolName": {
+          "type": "string",
+          "description": "Name of the tool (for type: tool)"
+        },
+        "version": {
+          "type": "string",
+          "description": "Required version of the integration"
+        }
+      }
+    },
+    "HookBinding": {
+      "type": "object",
+      "required": [
+        "event",
+        "command",
+        "description"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "event": {
+          "type": "string",
+          "enum": [
+            "PreToolUse",
+            "PostToolUse",
+            "UserPromptSubmit",
+            "Stop",
+            "Notification"
+          ],
+          "description": "Hook event type"
+        },
+        "matcher": {
+          "type": "string",
+          "description": "Optional regex pattern to match against event context"
+        },
+        "command": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Command to execute when hook fires"
+        },
+        "description": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Description of what this hook does"
+        }
+      }
+    },
+    "SkillExecutionHints": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "preferredModel": {
+          "type": "string",
+          "description": "Preferred Claude model for executing the skill"
+        },
+        "requiresUserConfirmation": {
+          "type": "boolean",
+          "description": "Whether user confirmation is required before execution"
+        },
+        "timeoutMs": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "Maximum execution time in milliseconds"
+        },
+        "maxIterations": {
+          "type": "integer",
+          "minimum": 1,
+          "description": "Maximum number of iterations for looping skills"
+        },
+        "parallelizable": {
+          "type": "boolean",
+          "description": "Whether the skill can be parallelized with other work"
+        },
+        "idempotent": {
+          "type": "boolean",
+          "description": "Whether the skill produces the same result when run multiple times"
+        },
+        "destructive": {
+          "type": "boolean",
+          "description": "Whether the skill performs destructive operations"
+        }
+      }
+    }
+  }
+}
